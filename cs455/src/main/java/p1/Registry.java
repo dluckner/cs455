@@ -6,12 +6,16 @@ public class Registry {
 	private boolean db = false;
 	String name;
 	int index = 0;
+	int weight;
+	//int bigNumber = 1000000000;
+	int bigNumber = 100;
 	private ArrayList<Node> Nodes = new ArrayList<Node>();
 	private ArrayList<String> NodeNames = new ArrayList<String>();
 	private ArrayList<Integer> NodeValues = new ArrayList<Integer>();
-	public Registry(String name) {
+	public Registry(String name, int weight) {
 		this.name = name;
-		this.register(this.name);
+		this.weight = weight;
+		this.register(this.name, this.weight);
 	}
 	
 	public boolean isDebugOn() {return this.db;}
@@ -53,18 +57,45 @@ public class Registry {
 		}
 	}
 	
-	public void register(String newNodeName) {
+	public void showEdgeWeights() {
+		int[][] edgeMatrix = this.getEdgeMatrix();
+		int length = edgeMatrix.length;
+		String output = this.name+": Edge Matrix...\n";
+		for(int j=0;j<length;j++) {
+			output += "\t|";
+			for(int i=0;i<length;i++) {
+				output += edgeMatrix[j][i] + "\t";
+			}
+			output += "|\n";
+		}
+		System.out.print(output);
+	}
+	
+	public int[][] getEdgeMatrix(){
+		int length = Nodes.size();
+		int[][] edgeMatrix = new int[length][length];
+		for(int j=0;j<length;j++) {
+			for(int i=0;i<length;i++) {
+				edgeMatrix[j][i] = Nodes.get(i).edgeWeight(j);
+			}
+			edgeMatrix[j][0] = this.bigNumber;
+			edgeMatrix[0][j] = this.bigNumber;
+		}
+		return edgeMatrix;
+	}
+	
+	public void register(String newNodeName, int weight) {
 		if(this.db) {System.out.println(this.name+": adding '"+newNodeName+"'");}
 		if(!NodeNames.contains(newNodeName)) {
-			Node buildNode = new Node(this.index, newNodeName);
+			Node buildNode = new Node(this.index, newNodeName, weight);
 			Nodes.add(buildNode);
 			NodeNames.add(newNodeName);
 			NodeValues.add(index);
-			this.connect(this.name, newNodeName);
+			this.connect(this.name, newNodeName, weight);
 			this.index++;
 		}
 		else {
-			this.connect(this.name, newNodeName);
+			this.connect(this.name, newNodeName, weight);
 		}
 	}
 	
@@ -83,15 +114,15 @@ public class Registry {
 		}
 	}
 	
-	public void connect(String host, String newFriend) {
+	public void connect(String host, String newFriend, int weight) {
 		if(this.db && !host.equals(this.name)) {System.out.println(this.name+": connecting '"+host+"' to '"+newFriend+"'");}
 		int positionHost = NodeNames.indexOf(host);
 		int positionNewFriend = NodeNames.indexOf(newFriend);
 		//if(this.db && !host.equals(this.name)) {System.out.println(this.name+": connecting '"+positionHost+"' to '"+positionNewFriend+"'");}
-		if(positionHost == 0 && positionNewFriend == 0) {Nodes.get(positionHost).addConnection(positionNewFriend);return;}
+		if(positionHost == 0 && positionNewFriend == 0) {Nodes.get(positionHost).addConnection(positionNewFriend, weight);return;}
 		if(this.db && positionHost==-1) {System.out.println("\t'"+host+"' does not exist in "+this.name);return;}
 		if(this.db && positionNewFriend==-1) {System.out.println("\t'"+host+"' does not exist in "+this.name);return;}
-		Nodes.get(positionHost).addConnection(positionNewFriend);
-		Nodes.get(positionNewFriend).addConnection(positionHost);
+		Nodes.get(positionHost).addConnection(positionNewFriend, weight);
+		Nodes.get(positionNewFriend).addConnection(positionHost, weight);
 	}
 }

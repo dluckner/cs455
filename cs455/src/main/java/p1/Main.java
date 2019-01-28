@@ -8,23 +8,24 @@ public class Main {
 		String cod = "cod";
 		String blowfish = "blowfish";
 		
-		Registry reg = new Registry(swordfish);
+		Registry reg = new Registry(swordfish, 10);
 		
-		reg.register(tuna);
-		reg.register(shark);
-		reg.register(cod);
-		reg.register(blowfish);
-		reg.connect(tuna, shark);
-		reg.connect(tuna, cod);
-		reg.connect(tuna, blowfish);
-		reg.connect(shark,cod);
-		reg.connect(shark, blowfish);
-		reg.connect(cod, blowfish);
-		reg.unregister(tuna);
-		reg.unregister(blowfish);
+		reg.register(tuna, 11);
+		reg.register(shark, 12);
+		reg.register(cod, 13);
+		reg.register(blowfish, 14);
+		reg.connect(tuna, shark, 20);
+		reg.connect(tuna, cod, 30);
+		reg.connect(tuna, blowfish, 40);
+		reg.connect(shark,cod, 50);
+		reg.connect(shark, blowfish, 60);
+		reg.connect(cod, blowfish, 70);
+		//reg.unregister(tuna);
+		//reg.unregister(blowfish);
 		
 		reg.showDetails(cod);
 		reg.showAllConnections();
+		reg.showEdgeWeights();
 		System.out.println("~~~DONE~~~");
 	}
 }
