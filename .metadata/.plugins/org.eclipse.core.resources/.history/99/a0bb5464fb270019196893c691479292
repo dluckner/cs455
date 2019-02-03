@@ -2,15 +2,14 @@ package p1;
 import java.io.*;
 import java.net.*;
 
-public class Client extends Thread{
-	static String SERVER_ADDRESS = "192.168.0.105";
+public class Client implements Runnable{
+	static String SERVER_ADDRESS = "swordfish.cs.colostate.edu";
 	static Integer PORT = 5001;
 	
 	public void run(){
 		Socket socketToTheServer = null;
 		DataInputStream inputStream = null;
 		DataOutputStream outputStream = null;
-		System.out.println("Starting up Client...");
 		
 		try {
 			socketToTheServer = new Socket(SERVER_ADDRESS, PORT);
@@ -20,7 +19,7 @@ public class Client extends Thread{
 			System.out.println("Client::main::creating_the_sockets: " + e);
 		}
 		
-		System.out.println("Client: Connected to the server!");
+		System.out.println("Connected to the server!");
 		
 		try {
 			Integer msgLength = 0;
@@ -29,7 +28,7 @@ public class Client extends Thread{
 			
 			//If we got here that means there was an integer to read and we have the
 			//  length of the rest of the message
-			System.out.println("Client: Received Message length of: " + msgLength);
+			System.out.println("Received Message length of: " + msgLength);
 			
 			//Try to read the incoming message.
 			byte[] incomingMessage = new byte[msgLength];
@@ -39,7 +38,7 @@ public class Client extends Thread{
 			//  *potentially* incomingMessage.length byte, maybe less
 			//  whereas .readfully(...) will read exactly msgLength number of bytes
 			
-			System.out.println("Client: Received Message: " + new String(incomingMessage, 0));
+			System.out.println("Received Message: " + new String(incomingMessage, 0));
 			
 			//Now, let's respond
 			String mym = "CS455";

@@ -1,12 +1,14 @@
 package p1;
 
+import java.util.Arrays;
+
 public class Main {
 	public static void main(String args[]) {
 
-		Thread myServer = new Server();
-		Thread myClient = new Client();
-		myServer.start();
-		myClient.start();
+		Server myServer = new Server();
+		Client myClient = new Client();
+		myServer.run();
+		myClient.run();
 		
 		/*
 		 * Test Register

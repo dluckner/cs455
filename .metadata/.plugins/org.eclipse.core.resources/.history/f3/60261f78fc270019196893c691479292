@@ -57,7 +57,7 @@ public class Server extends Thread{
 			//  *potentially* incomingMessage.length byte, maybe less
 			//  whereas .readfully(...) will read exactly msgLength number of bytes
 			
-			System.out.println("Server: Received Message: " + new String(incomingMessage,0));
+			System.out.println("Received Message: " + new String(incomingMessage,0));
 			
 			//Close Stream and Sockets
 			inputStream.close();

@@ -6,13 +6,12 @@ import java.net.*;
 //import java.io.IOException;
 //import java.net.ServerSocket;
 //import java.net.Socket;
-public class Server extends Thread{
+public class Server {
 	static Integer OUR_PORT = 5001;
 	
-	public void run(){
+	public static void test() throws IOException{
 		Integer NUM_POSSIBLE_CONNECTIONS = 1;
 		ServerSocket ourServerSocket = null;
-		System.out.println("Starting up Server...");
 		
 		try {
 			ourServerSocket = new ServerSocket(OUR_PORT, NUM_POSSIBLE_CONNECTIONS);
@@ -23,7 +22,7 @@ public class Server extends Thread{
 			//Block on accepting connections. Once it has received a connection it will return a socket for us to use
 			Socket incomingConnectionSocket = ourServerSocket.accept();
 			
-			System.out.println("Server: We recieved a connection!");
+			System.out.println("We recieved a connection!");
 			
 			//We have yet to block again, so we can handle this connection however we would like to
 			//For now, let's send a message and then wait for the response.
@@ -31,8 +30,9 @@ public class Server extends Thread{
 			DataOutputStream outputStream = new DataOutputStream(incomingConnectionSocket.getOutputStream());
 			
 			//Let's send a message to our new friend
-			String myMsg = "Server: What class is this video for?";
+			String myMsg = "What class is this video for?";
 			byte[] msgToClient = myMsg.getBytes();
+			System.out.println(msgToClient);
 			Integer msgToClientLength = msgToClient.length;
 			
 			//Our self-inflicted protocol says we need to send the length first
@@ -47,7 +47,7 @@ public class Server extends Thread{
 			
 			//If we get here that means there was an integer to
 			//  read and we have gotten the length of the rest of the next message
-			System.out.println("Server: Received a message of length of: " + msgLength);
+			System.out.println("Received a message of length of: " + msgLength);
 			
 			//Try to read the incoming message
 			byte[] incomingMessage = new byte[msgLength];
@@ -57,7 +57,7 @@ public class Server extends Thread{
 			//  *potentially* incomingMessage.length byte, maybe less
 			//  whereas .readfully(...) will read exactly msgLength number of bytes
 			
-			System.out.println("Server: Received Message: " + new String(incomingMessage,0));
+			System.out.println("Received Message: " + new String(incomingMessage,0));
 			
 			//Close Stream and Sockets
 			inputStream.close();
