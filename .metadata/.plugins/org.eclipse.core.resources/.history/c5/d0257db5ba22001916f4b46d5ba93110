@@ -1,0 +1,30 @@
+package p1;
+
+public class Main {
+	public static void main(String args[]) {
+		String swordfish = "swordFish";
+		String shark = "shark";
+		String tuna = "tuna";
+		String cod = "cod";
+		String blowfish = "blowfish";
+		
+		Registry reg = new Registry(swordfish, 10);
+		
+		reg.register(tuna, 11);
+		reg.register(shark, 12);
+		reg.register(cod, 13);
+		reg.register(blowfish, 14);
+		reg.connect(tuna, shark, 10);
+		reg.connect(tuna, cod, 10);
+		reg.connect(tuna, blowfish, 10);
+		reg.connect(shark,cod, 10);
+		reg.connect(shark, blowfish, 10);
+		reg.connect(cod, blowfish, 10);
+		reg.unregister(tuna);
+		reg.unregister(blowfish);
+		
+		reg.showDetails(cod);
+		reg.showAllConnections();
+		System.out.println("~~~DONE~~~");
+	}
+}

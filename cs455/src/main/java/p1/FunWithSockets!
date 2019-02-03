@@ -1,0 +1,26 @@
+//Socket
+Socket socketObject = new Socket(SERVER_ADDRESS, PORT);
+
+//Streams
+DataOutputStream outputStream = new DataOutputStream(socketObject.getOutputStream());
+DataInputStream inputStream = new DataInputStream(socketObject.getInputStream());
+
+//Write
+outputStream.writeInt(integerExample);
+outputStream.write(msgArray, 0, msgArrayLength);
+
+//Read
+Integer intRead = inputStream.readInt();
+byte[] msgRead = new byte[intRead];
+incomingInputStream.readFully(msgRead, 0, intRead);
+
+//Close
+inputStream.close();
+outputStream.close();
+socketObject.close();
+
+//Server
+ServerSocket ourServerSocket;
+ourServerSocket = new ServerSocket(OUT_PORT, NUM_POSSIBLE_CONNECTIONS);
+
+Socket incomingConnectionsSocket = ourServerSocket.accept();
