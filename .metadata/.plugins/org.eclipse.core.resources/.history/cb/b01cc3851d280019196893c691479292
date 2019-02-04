@@ -1,0 +1,24 @@
+package p1;
+
+public class Node implements Runnable{
+	private boolean debug = true;
+	private boolean debug2 = true;
+	private String name;
+	private String registryAddress;
+	public static final EventFactory eventFactory = null;
+	Integer maxConnections;
+	Integer maxRounds;
+	
+	public Node(String name, String registryAddress, Integer maxConnections, Integer maxRounds) {
+		if(debug) {System.out.println(this.name+": Establishing...");}
+		this.name = name;
+		this.registryAddress = registryAddress;
+		this.maxConnections = maxConnections;
+		this.maxRounds = maxRounds;
+	}
+	
+	public void run(){
+		System.out.println(this.name+": Up and Running!");
+		this.close();
+	}
+}

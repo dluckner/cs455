@@ -1,0 +1,8 @@
+package p1;
+
+public class Registry implements Runnable{
+	private String name = "Registry";
+	public void run(){
+		System.out.println(this.name+": is Running!");
+	}
+}

@@ -1,0 +1,360 @@
+package p1;
+import java.io.*;
+import java.net.*;
+//import java.io.DataInputStream;
+//import java.io.DataOutputStream;
+//import java.io.IOException;
+//import java.net.ServerSocket;
+//import java.net.Socket;
+public class Server extends Thread{
+	static Integer OUR_PORT = 5001;
+	
+	public void run(){
+		Integer NUM_POSSIBLE_CONNECTIONS = 1;
+		ServerSocket ourServerSocket = null;
+		System.out.println("Starting up Server...");
+		
+		try {
+			ourServerSocket = new ServerSocket(OUR_PORT, NUM_POSSIBLE_CONNECTIONS);
+		} catch(IOException e) {
+			System.out.println("Clients::main::creating_the_sockets:: " + e);
+		}
+		try {
+			//Block on accepting connections. Once it has received a connection it will return a socket for us to use
+			Socket incomingConnectionSocket = ourServerSocket.accept();
+			
+			System.out.println("Server: We recieved a connection!");
+			
+			//We have yet to block again, so we can handle this connection however we would like to
+			//For now, let's send a message and then wait for the response.
+			DataInputStream inputStream = new DataInputStream(incomingConnectionSocket.getInputStream());
+			DataOutputStream outputStream = new DataOutputStream(incomingConnectionSocket.getOutputStream());
+			
+			//Let's send a message to our new friend
+			String myMsg = "Server: What class is this video for?";
+			byte[] msgToClient = myMsg.getBytes();
+			Integer msgToClientLength = msgToClient.length;
+			
+			//Our self-inflicted protocol says we need to send the length first
+			outputStream.writeInt(msgToClientLength);
+			//Then we can send the message
+			outputStream.write(msgToClient, 0 ,msgToClientLength);
+			
+			//Now we wait for the response
+			Integer msgLength = 0;
+			//Try to read an Integer from our input stream. This will block if there is nothing.
+			msgLength = inputStream.readInt();
+			
+			//If we get here that means there was an integer to
+			//  read and we have gotten the length of the rest of the next message
+			System.out.println("Server: Received a message of length of: " + msgLength);
+			
+			//Try to read the incoming message
+			byte[] incomingMessage = new byte[msgLength];
+			inputStream.readFully(incomingMessage, 0, msgLength);
+			
+			//You could have used .readByte[] incomingMessage), however this will read
+			//  *potentially* incomingMessage.length byte, maybe less
+			//  whereas .readfully(...) will read exactly msgLength number of bytes
+			
+			System.out.println("Server: Received Message: " + new String(incomingMessage,0));
+			
+			//Close Stream and Sockets
+			inputStream.close();
+			outputStream.close();
+			incomingConnectionSocket.close();
+			ourServerSocket.close();
+			
+		} catch (IOException e) {
+			System.out.println("Server::main::accepting_connections: " + e);
+		}
+	}
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+package p1;
+import java.io.*;
+import java.net.*;
+
+public class Client extends Thread{
+	static String SERVER_ADDRESS = "192.168.0.105";
+	static Integer PORT = 5001;
+	
+	public void run(){
+		Socket socketToTheServer = null;
+		DataInputStream inputStream = null;
+		DataOutputStream outputStream = null;
+		System.out.println("Starting up Client...");
+		
+		try {
+			socketToTheServer = new Socket(SERVER_ADDRESS, PORT);
+			inputStream = new DataInputStream(socketToTheServer.getInputStream());
+			outputStream = new DataOutputStream(socketToTheServer.getOutputStream());
+		} catch(IOException e) {
+			System.out.println("Client::main::creating_the_sockets: " + e);
+		}
+		
+		System.out.println("Client: Connected to the server!");
+		
+		try {
+			Integer msgLength = 0;
+			//Try to read an integer from our input stream. This will block if there is nothing.
+			msgLength = inputStream.readInt();
+			
+			//If we got here that means there was an integer to read and we have the
+			//  length of the rest of the message
+			System.out.println("Client: Received Message length of: " + msgLength);
+			
+			//Try to read the incoming message.
+			byte[] incomingMessage = new byte[msgLength];
+			inputStream.readFully(incomingMessage, 0, msgLength);
+			
+			//You could have used .readByte[] incomingMessage), however this will read
+			//  *potentially* incomingMessage.length byte, maybe less
+			//  whereas .readfully(...) will read exactly msgLength number of bytes
+			
+			System.out.println("Client: Received Message: " + new String(incomingMessage, 0));
+			
+			//Now, let's respond
+			String mym = "CS455";
+			byte[] msgToServer = mym.getBytes();
+			Integer msgToServerLength = msgToServer.length;
+			//Our self-inflicted protocol says that we send the length first
+			outputStream.writeInt(msgToServer.length);
+			//Then we can send the message
+			outputStream.write(msgToServer, 0, msgToServerLength);
+			
+			//Close streams and the sockets
+			inputStream.close();
+			outputStream.close();
+			socketToTheServer.close();
+		} catch(IOException e) {
+			System.out.println("CLIENT::main::talking_to_the_server:: " + e);
+		}
+	}
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+package p1;
+
+import java.util.ArrayList;
+
+public class Registry {
+	private boolean db = false;
+	String name;
+	int index = 0;
+	int weight;
+	//int bigNumber = 1000000000;
+	int bigNumber = 100;
+	private ArrayList<Node> Nodes = new ArrayList<Node>();
+	private ArrayList<String> NodeNames = new ArrayList<String>();
+	private ArrayList<Integer> NodeValues = new ArrayList<Integer>();
+	public Registry(String name, int weight) {
+		this.name = name;
+		this.weight = weight;
+		this.register(this.name, this.weight);
+	}
+	
+	public boolean isDebugOn() {return this.db;}
+	public String getName() {return this.name;}
+	public int getIndex() {return this.index;}
+	public int getOverlaySize() {return this.Nodes.size();}
+	
+	public void showAllNodes() {
+		System.out.println(this.name+": Registered Nodes...");
+		for(int i=0;i<Nodes.size();i++) {
+			System.out.println("\t" + NodeNames.get(i) + " => '" + Nodes.get(i).getName()+ "'");
+		}
+	}
+	
+	public void showAllConnections() {
+		String output = this.name+": Connections...\n";
+		for(int i=0;i<Nodes.size();i++) {
+			output += "\t" + Nodes.get(i).getName() + ": {";
+			ArrayList<Integer> currentConnectionsList = Nodes.get(i).getConnections();
+			for(int j=0;j<Nodes.size();j++) {
+				if(Nodes.get(i).isConnectedTo(j)) {
+					String nextConnection = Nodes.get(j).getName();
+					output += nextConnection + ", ";
+				}
+			}
+			if(currentConnectionsList.size()>0) {output=output.substring(0,output.length()-2);}
+			output += "}\n";
+		}
+		System.out.print(output);
+	}
+	
+	public void showDetails(String myNode) {
+		int position = this.NodeNames.lastIndexOf(myNode);
+		if (position ==-1) {System.out.print(this.name+": Does not contain '"+myNode+"'");return;}
+		ArrayList<Integer> friends = Nodes.get(position).getConnections();
+		System.out.println("Showing: "+Nodes.get(position).getName()+"="+friends.size()+"...");
+		for(int i=0;i<index;i++) {
+			if(Nodes.get(position).isConnectedTo(i)) {System.out.println("\t"+Nodes.get(i).getName());}
+		}
+	}
+	
+	public void showEdgeWeights() {
+		int[][] edgeMatrix = this.getEdgeMatrix();
+		int length = edgeMatrix.length;
+		String output = this.name+": Edge Matrix...\n";
+		for(int j=0;j<length;j++) {
+			output += "\t|";
+			for(int i=0;i<length;i++) {
+				output += edgeMatrix[j][i] + "\t";
+			}
+			output += "|\n";
+		}
+		System.out.print(output);
+	}
+	
+	public int[][] getEdgeMatrix(){
+		int length = Nodes.size();
+		int[][] edgeMatrix = new int[length][length];
+		for(int j=0;j<length;j++) {
+			for(int i=0;i<length;i++) {
+				edgeMatrix[j][i] = Nodes.get(i).edgeWeight(j);
+			}
+			edgeMatrix[j][0] = this.bigNumber;
+			edgeMatrix[0][j] = this.bigNumber;
+		}
+		return edgeMatrix;
+	}
+	
+	public void register(String newNodeName, int weight) {
+		if(this.db) {System.out.println(this.name+": adding '"+newNodeName+"'");}
+		if(!NodeNames.contains(newNodeName)) {
+			Node buildNode = new Node(this.index, newNodeName, weight);
+			Nodes.add(buildNode);
+			NodeNames.add(newNodeName);
+			NodeValues.add(index);
+			this.connect(this.name, newNodeName, weight);
+			this.index++;
+		}
+		else {
+			this.connect(this.name, newNodeName, weight);
+		}
+	}
+	
+	public void unregister(String deleteNodeName) {
+		if(this.db) {System.out.println(this.name+": removing '"+deleteNodeName+"'");}
+		int position = NodeNames.indexOf(deleteNodeName);
+		//System.out.println("POS: "+position);
+		if(position>=0) {
+			for(int i=0;i<Nodes.size();i++) {
+				Nodes.get(i).removeConnection(position);
+			}
+			Nodes.get(position).clearConnections();
+			//Nodes.remove(position);
+			//NodeNames.remove(position);
+			//NodeValues.remove(position);
+		}
+	}
+	
+	public void connect(String host, String newFriend, int weight) {
+		if(this.db && !host.equals(this.name)) {System.out.println(this.name+": connecting '"+host+"' to '"+newFriend+"'");}
+		int positionHost = NodeNames.indexOf(host);
+		int positionNewFriend = NodeNames.indexOf(newFriend);
+		//if(this.db && !host.equals(this.name)) {System.out.println(this.name+": connecting '"+positionHost+"' to '"+positionNewFriend+"'");}
+		if(positionHost == 0 && positionNewFriend == 0) {Nodes.get(positionHost).addConnection(positionNewFriend, weight);return;}
+		if(this.db && positionHost==-1) {System.out.println("\t'"+host+"' does not exist in "+this.name);return;}
+		if(this.db && positionNewFriend==-1) {System.out.println("\t'"+host+"' does not exist in "+this.name);return;}
+		Nodes.get(positionHost).addConnection(positionNewFriend, weight);
+		Nodes.get(positionNewFriend).addConnection(positionHost, weight);
+	}
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+package p1;
+
+import java.util.ArrayList;
+
+public class Node {
+	private boolean db = !true;
+	private int number;
+	private String name;
+	private int weight;
+	//int bigNumber = 1000000000;
+	int bigNumber = 100;
+	private ArrayList<Integer> connections = new ArrayList<Integer>();
+	private ArrayList<Integer> connectionsWeights = new ArrayList<Integer>();
+	
+	public Node(int number, String name, int weight){
+		this.number = number;
+		this.name = name;
+		this.weight = weight;
+	}
+	
+	public boolean isDebugOn() {return this.db;}
+	public int getNumber() {return this.number;}
+	public String getName() {return this.name+"["+this.number+"="+this.weight+"]";}
+	public int getWeight() {return this.weight;}
+	public String toString() {return this.name;}
+	public ArrayList<Integer> getConnections() {return this.connections;}
+	
+	public boolean addConnection(int newConnectionNumber, int weight) {
+		if(this.db && this.isConnectedTo(newConnectionNumber)) {
+			System.out.println(this.name+" ["+this.number+"] already knows: "+newConnectionNumber);
+			return false;
+		}
+		if(this.isConnectedTo(newConnectionNumber)) {
+			return false;
+		}
+		if(this.db) {System.out.println("\t"+this.getName()+": now knows '"+newConnectionNumber+"'");}
+		connections.add(newConnectionNumber);
+		connectionsWeights.add(weight);
+		return true;
+	}
+	
+	public boolean removeConnection(int connectionNumber) {
+		if(this.db && !connections.contains(connectionNumber)) {
+			System.out.println(this.name+" ["+this.number+"] doesn't know: "+connectionNumber);
+			return false;
+		}
+		if(!connections.contains(connectionNumber)) {
+			return false;
+		}
+		if(this.db) {System.out.println("\t"+this.name+": Forgetting "+connectionNumber);}
+		int position = connections.indexOf(connectionNumber);
+		connections.remove(position);
+		connectionsWeights.remove(position);
+		return true;
+	}
+	
+	public void clearConnections() {
+		this.connections.clear();
+		this.connectionsWeights.clear();
+	}
+		
+	public boolean isConnectedTo(int value) {
+		return connections.contains(value);
+	}
+	
+	public int edgeWeight(int value) {
+		if(connections.indexOf(value)==-1) {return this.bigNumber;}
+		return connectionsWeights.get(connections.indexOf(value));
+	}
+
+}
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,0 +1,17 @@
+package p1;
+import java.io.*;
+import java.net.*;
+
+public class Node implements Runnable{
+	private String name;
+	private String registryAddress;
+	static Integer PORT;
+	
+	public Node(String name, String registryAddress) {
+		this.name = name;
+		this.registryAddress = registryAddress;
+	}
+	public void run(){
+		System.out.println(this.name+": is Running!");
+	}
+}

@@ -1,0 +1,34 @@
+package p1;
+import java.io.*;
+import java.net.*;
+
+public class Node implements Runnable{
+	private String name;
+	private String registryAddress;
+	static Integer port;
+	Socket socketToTheServer = null;
+	DataInputStream inputStream = null;
+	DataOutputStream outputStream = null;
+	
+	public Node(String name, String registryAddress) {
+		this.name = name;
+		this.registryAddress = registryAddress;
+		this.port = this.getPortNumber();
+	}
+	
+	private Integer getPortNumber() {
+		Integer portNumber = 0;
+		for(int i=1025;i<=49151;i++) {
+			try {
+				socketToTheServer = new Socket(SERVER_ADDRESS, PORT);
+				inputStream = new DataInputStream(socketToTheServer.getInputStream());
+				outputStream = new DataOutputStream(socketToTheServer.getOutputStream());
+			}
+		}
+		return 5001;
+	}
+	
+	public void run(){
+		System.out.println(this.name+": is Running!");
+	}
+}

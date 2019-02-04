@@ -1,0 +1,41 @@
+package p1;
+import java.io.*;
+import java.net.*;
+
+public class Node implements Runnable{
+	private boolean debug = true;
+	private boolean debug2 = true;
+	private String name;
+	private String registryAddress;
+	static Integer port;
+	Socket socketToTheRegister = null;
+	DataInputStream inputStream = null;
+	DataOutputStream outputStream = null;
+	
+	public Node(String name, String registryAddress) {
+		this.name = name;
+		this.registryAddress = registryAddress;
+		this.port = this.establishPortNumber();
+	}
+	
+	private Integer establishPortNumber() {
+		if(debug) {System.out.println(this.name+": Connecting to Registry...");}
+		Integer portNumber = 0;
+		//for(int i=1025;i<=49151;i++) {
+		for(int i=5000;i<=5020;i++) {
+			try {
+				socketToTheRegister = new Socket(registryAddress, i);
+				portNumber = i;
+				break;
+			} catch(IOException e) {
+				if(debug2) {System.out.println(this.name+": could not use port = " + i);};
+			}
+		}
+		if(debug) {System.out.println(this.name+": Connected to Registry at port number " + portNumber);}
+		return portNumber;
+	}
+	
+	public void run(){
+		System.out.println(this.name+": is Running!");
+	}
+}

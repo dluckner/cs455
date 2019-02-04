@@ -1,0 +1,18 @@
+package p1;
+
+public class Main {
+	public static void main(String args[]) {
+		String ipAddress = "192.168.0.105";
+		//String[] machineList = {"Apples","Butter","Candy","Danish","EggPlant","Friters","Goulash","Ham","Icecream","Jelly","Kiwi"};
+		String[] machineList = {"Apples"};
+		Runnable registry = new Registry(machineList.length);
+		Thread registryThread = new Thread(registry);
+		registryThread.start();
+		Thread[] nodes = new Thread[machineList.length];
+		for(int i=0;i<machineList.length;i++) {
+			Runnable nextNode = new Node(machineList[i], ipAddress);
+			nodes[i] = new Thread(nextNode);
+			nodes[i].start();
+		}
+	}
+}

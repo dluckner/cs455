@@ -1,0 +1,27 @@
+package p1;
+import java.io.*;
+import java.net.*;
+
+public class Registry implements Runnable{
+	private boolean debug = true;
+	private String name = "Registry";
+	Integer NUM_POSSIBLE_CONNECTIONS;
+	static Integer port;
+	Socket[] sockets = null;
+	DataInputStream[] inputStreams = null;
+	DataOutputStream[] outputStreams = null;
+	
+	public Registry(int maxConnections) {
+		this.NUM_POSSIBLE_CONNECTIONS = maxConnections;
+		sockets = new Socket[maxConnections];
+		inputStreams = new DataInputStream[maxConnections];
+		outputStreams = new DataOutputStream[maxConnections];
+	}
+	
+	public Integer getPortNumber() {return this.port;}
+	
+	public void run(){
+		if(debug) {System.out.println(this.name+": is Running!");}
+		
+	}
+}

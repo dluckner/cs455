@@ -1,0 +1,29 @@
+package p1;
+
+public class Registry implements Runnable{
+	private boolean debug = true;
+	private boolean debug2 = true;
+	private String name = "Registry";
+	public static EventFactory eventFactory = null;
+	Integer maxConnections;
+	Integer maxRounds;
+	
+	
+	public Registry(int maxConnections, int maxRounds) {
+		this.maxConnections = maxConnections;
+		this.maxRounds = maxRounds;
+		eventFactory = new EventFactory(0, "Reggy", maxConnections);
+	}
+	
+	public void run(){
+		System.out.println(this.name+": Up and Running!");
+		for(int i=0;i<maxRounds;i++) {
+			for(int j=0;j<maxConnections;j++) {
+				eventFactory.run();
+			}
+		}
+		eventFactory.close();
+	}
+	
+
+}

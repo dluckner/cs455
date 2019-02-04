@@ -1,0 +1,14 @@
+package p1;
+import java.io.*;
+import java.net.*;
+
+import java.net.ServerSocket;
+
+public class Registry implements Runnable{
+	private String name = "Registry";
+	Integer NUM_POSSIBLE_CONNECTIONS = 1;
+	ServerSocket ourServerSocket = null;
+	public void run(){
+		System.out.println(this.name+": is Running!");
+	}
+}

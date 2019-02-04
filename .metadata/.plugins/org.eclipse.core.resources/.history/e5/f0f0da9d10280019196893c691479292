@@ -1,0 +1,68 @@
+package p1;
+import java.io.*;
+import java.net.*;
+
+public class Registry implements Runnable{
+	private boolean debug = true;
+	private boolean debug2 = true;
+	private String name = "Registry";
+	Integer maxConnections;
+	static Integer port;
+	ServerSocket[] sockets = null;
+	DataInputStream[] inputStreams = null;
+	DataOutputStream[] outputStreams = null;
+	
+	public Registry(int maxConnections) {
+		this.maxConnections = maxConnections;
+		sockets = new ServerSocket[maxConnections];
+		inputStreams = new DataInputStream[maxConnections];
+		outputStreams = new DataOutputStream[maxConnections];
+		this.establishServerSocketArray();
+	}
+	
+	public Integer getPortNumber() {return this.port;}
+	
+	private void establishServerSocketArray() {
+		if(debug) {System.out.println(this.name+": Obtaining Sockets");}
+		for(int i=0;i<this.maxConnections;i++) {
+			this.establishPortNumber(i);
+		}
+	}
+	
+	private void establishPortNumber(int index) {
+		//for(int i=1025;i<=49151;i++) {
+		for(int i=5000;i<=5020;i++) {
+			try {
+				sockets[index] = new ServerSocket(i, this.maxConnections);
+				if(debug2) {System.out.println(this.name+": opened port number "+i);}
+				break;
+			} catch(IOException e) {
+				if(debug2) {System.out.println(this.name+": could not use port = " + i);};
+			}
+		}
+	}
+	
+	public void run(){
+		if(debug) {System.out.println(this.name+": Up and Running!");}
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//this.close();
+	}
+	
+	private void close() {
+		for(int i=0;i<this.maxConnections;i++) {
+			try {
+				sockets[i].close();
+				inputStreams[i].close();
+				outputStreams[i].close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+}

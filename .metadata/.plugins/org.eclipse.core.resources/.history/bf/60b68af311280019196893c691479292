@@ -1,0 +1,22 @@
+package p1;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class MessagingNodesList {
+	private boolean debug = true;
+	private int type; // 0=>Registry, 1=>Messaging Node
+	private Integer maxConnections;
+	static Integer port;
+	ServerSocket[] sockets = null;
+	Socket[] socketToTheRegister = null;
+	DataInputStream[] inputStreams = null;
+	DataOutputStream[] outputStreams = null;
+	
+	public MessagingNodesList(int type, Integer maxConnections) {
+		this.type = type; // 0=>Registry, 1=>Messaging Node
+		this.maxConnections = maxConnections;
+	}
+}

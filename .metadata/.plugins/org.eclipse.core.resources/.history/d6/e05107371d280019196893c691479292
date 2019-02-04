@@ -1,0 +1,29 @@
+package p1;
+
+public class Registry implements Runnable{
+	private boolean debug = true;
+	private boolean debug2 = true;
+	private String name = "Registry";
+	public static EventFactory eventFactory = null;
+	Integer maxConnections;
+	
+	
+	public Registry(int maxConnections) {
+		this.maxConnections = maxConnections;
+		eventFactory = new EventFactory(0, "Reggy", maxConnections);
+	}
+	
+	public void run(){
+		if(debug) {System.out.println(this.name+": Up and Running!");}
+		Socket[] incomingConnectionSocket = new Socket[this.maxConnections];
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//this.close();
+	}
+	
+
+}
