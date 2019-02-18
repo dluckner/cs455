@@ -1,7 +1,0 @@
-package p1;
-
-public interface Message {
-	abstract int getType();
-	abstract String getAddress();
-	abstract int getPortNumber();
-}

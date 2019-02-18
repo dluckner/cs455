@@ -2,6 +2,7 @@ package p1;
 
 import java.io.*;
 import java.net.*;
+import overlay.wireformats.*;
 
 public class EventFactory implements Runnable{
 	private boolean debug = true;
@@ -80,7 +81,6 @@ public class EventFactory implements Runnable{
 					break;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -106,9 +106,9 @@ public class EventFactory implements Runnable{
 		try {
 		this.serverSocket.close();
 		for(int i=0;i<1;i++) {
-				if(!sockets[i].equals(null)) {sockets[i].close();}
-				if(!inputStreams[i].equals(null)) {inputStreams[i].close();}
-				if(!outputStreams[i].equals(null)) {outputStreams[i].close();}
+				if(this.type==1&&!sockets[i].equals(null)) {sockets[i].close();}
+				if(this.type==1&&!inputStreams[i].equals(null)) {inputStreams[i].close();}
+				if(this.type==1&&!outputStreams[i].equals(null)) {outputStreams[i].close();}
 		}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

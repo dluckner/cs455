@@ -1,7 +1,0 @@
-package p1;
-
-public interface Message {
-	int Message_Register_Request = 0;
-	int Message_Register_Response = 1;
-	abstract int getType();
-}
